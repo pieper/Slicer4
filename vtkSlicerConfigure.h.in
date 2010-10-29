@@ -1,0 +1,80 @@
+/* 
+ * Here is where system computed values get stored.
+ * These values should only change when the target compile platform changes.
+ */
+
+#if defined(WIN32) && !defined(VTKSLICER_STATIC)
+#pragma warning ( disable : 4275 )
+#endif
+
+#cmakedefine CMAKE_WORDS_BIGENDIAN
+#ifdef CMAKE_WORDS_BIGENDIAN
+  #define WORDS_BIGENDIAN
+#else
+  #define WORDS_LITTLEENDIAN
+#endif
+
+#cmakedefine BUILD_SHARED_LIBS
+#ifndef BUILD_SHARED_LIBS
+#define VTKSLICER_STATIC
+#endif
+
+#cmakedefine Slicer_USE_BatchMake
+#cmakedefine Slicer_USE_IGSTK
+#cmakedefine Slicer_USE_MIDAS
+#cmakedefine Slicer_USE_NAVITRACK
+#cmakedefine Slicer_USE_NUMPY
+#cmakedefine Slicer_USE_PYTHON
+#cmakedefine Slicer_USE_PYTHONQT
+#cmakedefine Slicer_USE_PYTHONQT_WITH_TCL
+#cmakedefine Slicer_USE_OPENTRACKER
+#cmakedefine Slicer_USE_QT
+#cmakedefine Slicer_USE_KWWIDGETS
+
+#define VTKSLICER_CONFIGURATION_TYPES "@CMAKE_CONFIGURATION_TYPES@"
+
+#define Slicer_INSTALL_BIN_DIR "@Slicer_INSTALL_BIN_DIR@"
+#define Slicer_INSTALL_LIB_DIR "@Slicer_INSTALL_LIB_DIR@"
+#define Slicer_INSTALL_INCLUDE_DIR "@Slicer_INSTALL_INCLUDE_DIR@"
+#define Slicer_INSTALL_SHARE_DIR "@Slicer_INSTALL_SHARE_DIR@"
+#define Slicer_INSTALL_ITKFACTORIES_DIR "@Slicer_INSTALL_ITKFACTORIES_DIR@"
+
+#define Slicer_INSTALL_PLUGINS_BIN_DIR "@Slicer_INSTALL_PLUGINS_BIN_DIR@"
+#define Slicer_INSTALL_PLUGINS_LIB_DIR "@Slicer_INSTALL_PLUGINS_LIB_DIR@"
+#define Slicer_INSTALL_PLUGINS_INCLUDE_DIR "@Slicer_INSTALL_PLUGINS_INCLUDE_DIR@"
+#define Slicer_INSTALL_PLUGINS_SHARE_DIR "@Slicer_INSTALL_PLUGINS_SHARE_DIR@"
+#define Slicer_INSTALL_PLUGINS_CACHE_DIR "@Slicer_INSTALL_PLUGINS_CACHE_DIR@"
+
+#define Slicer_INSTALL_MODULES_BIN_DIR "@Slicer_INSTALL_MODULES_BIN_DIR@"
+#define Slicer_INSTALL_MODULES_LIB_DIR "@Slicer_INSTALL_MODULES_LIB_DIR@"
+#define Slicer_INSTALL_MODULES_INCLUDE_DIR "@Slicer_INSTALL_MODULES_INCLUDE_DIR@"
+#define Slicer_INSTALL_MODULES_SHARE_DIR "@Slicer_INSTALL_MODULES_SHARE_DIR@"
+
+#ifdef Slicer_BUILD_QTLOADABLEMODULES
+#  define Slicer_INSTALL_QTLOADABLEMODULES_BIN_DIR "@Slicer_INSTALL_QTLOADABLEMODULES_BIN_DIR@"
+#  define Slicer_INSTALL_QTLOADABLEMODULES_LIB_DIR "@Slicer_INSTALL_QTLOADABLEMODULES_LIB_DIR@"
+#  define Slicer_INSTALL_QTLOADABLEMODULES_INCLUDE_DIR "@Slicer_INSTALL_QTLOADABLEMODULES_INCLUDE_DIR@"
+#  define Slicer_INSTALL_QTLOADABLEMODULES_SHARE_DIR "@Slicer_INSTALL_QTLOADABLEMODULES_SHARE_DIR@"
+#endif //Slicer_BUILD_QTLOADABLEMODULES
+
+/* Do not use those variables unless you can not retrieve the Tcl/Tk version
+   at run-time using this code below:
+   int tcl_major, tcl_minor, tcl_patch_level;
+   Tcl_GetVersion(&tcl_major, &tcl_minor, &tcl_patch_level, NULL);
+*/
+#define Slicer_TCL_TK_MAJOR_VERSION "@TCL_TK_MAJOR_VERSION@"
+#define Slicer_TCL_TK_MINOR_VERSION "@TCL_TK_MINOR_VERSION@"
+#define Slicer_INCR_TCL_MAJOR_VERSION "@INCR_TCL_MAJOR_VERSION@"
+#define Slicer_INCR_TCL_MINOR_VERSION "@INCR_TCL_MINOR_VERSION@"
+
+// Convenient macro to print info provided as argument
+// Note: No-op is Slicer_USE_QT OFF
+#ifdef Slicer_USE_QT
+#define SlicerQDebug(_arg) {qDebug() << _arg;}
+#else
+#define SlicerQDebug(_arg)
+#endif
+
+// Library sub-directory
+#define VTK_DIR "@VTK_DIR@"
+//#define Teem_DIR "@Teem_DIR@"

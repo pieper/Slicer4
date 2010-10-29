@@ -1,0 +1,4 @@
+build @Slicer_BUILD@
+buildDate @Slicer_BUILDDATE@
+svnurl @Slicer_WC_URL@
+svnrevision @Slicer_WC_REVISION@

@@ -1,0 +1,86 @@
+/*==============================================================================
+
+  Program: 3D Slicer
+
+  Copyright (c) 2010 Kitware Inc.
+
+  See Doc/copyright/copyright.txt
+  or http://www.slicer.org/copyright/copyright.txt for details.
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Based on Slicer/Base/GUI/vtkSlicerViewerWidget.h,
+  this file was developed by Jean-Christophe Fillion-Robin, Kitware Inc.
+  and was partially funded by NIH grant 3P41RR013218-12S1
+
+==============================================================================*/
+
+#ifndef __vtkMRMLCameraDisplayableManager_h
+#define __vtkMRMLCameraDisplayableManager_h
+
+// MRMLDisplayableManager includes
+#include "vtkMRMLAbstractThreeDViewDisplayableManager.h"
+
+#include "vtkMRMLDisplayableManagerWin32Header.h"
+
+class vtkMRMLCameraNode;
+
+class VTK_MRML_DISPLAYABLEMANAGER_EXPORT vtkMRMLCameraDisplayableManager : 
+  public vtkMRMLAbstractThreeDViewDisplayableManager
+{
+
+public:
+  static vtkMRMLCameraDisplayableManager* New();
+  vtkTypeRevisionMacro(vtkMRMLCameraDisplayableManager,vtkMRMLAbstractThreeDViewDisplayableManager);
+  void PrintSelf(ostream& os, vtkIndent indent);
+  
+  virtual void ProcessMRMLEvents(vtkObject *caller, unsigned long event, void *callData);
+  
+  virtual void RemoveMRMLObservers();
+
+  void UpdateCameraNode();
+
+//  void AddCameraObservers();
+//  void RemoveCameraObservers();
+
+  ///
+  /// Events
+  //BTX
+  enum
+  {
+    ActiveCameraChangedEvent   = 30000
+  };
+  //ETX
+
+protected:
+
+  vtkMRMLCameraDisplayableManager();
+  virtual ~vtkMRMLCameraDisplayableManager();
+
+  virtual void Create();
+
+  virtual void OnMRMLSceneClosedEvent();
+  virtual void OnMRMLSceneImportedEvent();
+  virtual void OnMRMLSceneRestoredEvent();
+  virtual void OnMRMLSceneNodeAddedEvent(vtkMRMLNode* node);
+  virtual void OnMRMLSceneNodeRemovedEvent(vtkMRMLNode* node);
+
+  void SetAndObserveCameraNode(vtkMRMLCameraNode * newCameraNode);
+  
+private:
+
+  vtkMRMLCameraDisplayableManager(const vtkMRMLCameraDisplayableManager&);// Not implemented
+  void operator=(const vtkMRMLCameraDisplayableManager&);                     // Not Implemented
+  
+  //BTX
+  class vtkInternal;
+  vtkInternal * Internal;
+  //ETX
+
+};
+
+#endif

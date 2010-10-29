@@ -1,0 +1,29 @@
+/*=auto=========================================================================
+
+  Portions (c) Copyright 2005 Brigham and Women's Hospital (BWH) 
+  All Rights Reserved.
+
+  See Doc/copyright/copyright.txt
+  or http://www.slicer.org/copyright/copyright.txt for details.
+
+  Program:   3D Slicer
+
+=========================================================================auto=*/
+
+#include "vtkMRMLSelectionNode.h"
+
+#include <stdlib.h>
+#include <iostream>
+
+#include "TestingMacros.h"
+
+int vtkMRMLSelectionNodeTest1(int , char * [] )
+{
+  vtkSmartPointer< vtkMRMLSelectionNode > node1 = vtkSmartPointer< vtkMRMLSelectionNode >::New();
+
+  EXERCISE_BASIC_OBJECT_METHODS( node1 );
+
+  EXERCISE_BASIC_MRML_METHODS(vtkMRMLSelectionNode, node1);
+  
+  return EXIT_SUCCESS;
+}

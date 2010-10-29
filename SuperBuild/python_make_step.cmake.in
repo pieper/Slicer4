@@ -1,0 +1,15 @@
+
+if(UNIX)
+
+  set(cmd "make")
+  if (APPLE)
+    set(cmd "/bin/sh -c 'export LDFLAGS=-undefined\ dynamic_lookup; make'")
+  endif (APPLE)
+
+  EXECUTE_PROCESS( 
+    COMMAND ${cmd}
+    WORKING_DIRECTORY "@python_base@"
+    RESULT_VARIABLE rv
+    )
+endif()
+

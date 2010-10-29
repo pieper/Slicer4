@@ -1,0 +1,97 @@
+#
+# This file sets up the include directories, link directories and compiler
+# settings for a project to use Slicer.  Such projects could provide new
+# Slicer modules built against a Slicer build tree or a Slicer installation.
+#
+
+# Relax some constraints related to the build settings file. This was
+# preventing people from using the same compiler but with a different generator,
+# or just the same compiler installed in a non-standard location.
+
+set(SKIP_KWWidgets_BUILD_SETTINGS_FILE 1)
+set(SKIP_VTK_BUILD_SETTINGS_FILE 1)
+set(SKIP_ITK_BUILD_SETTINGS_FILE 1)
+set(SKIP_Teem_BUILD_SETTINGS_FILE 1)
+
+find_package(GenerateCLP REQUIRED)
+if(GenerateCLP_FOUND)
+  include(${GenerateCLP_USE_FILE})
+endif(GenerateCLP_FOUND)
+
+
+if(Slicer_USE_KWWIDGETS)
+  find_package(GenerateLM REQUIRED)
+  if(GenerateLM_FOUND)
+    include(${GenerateLM_USE_FILE})
+  endif(GenerateLM_FOUND)
+
+  find_package(KWWidgets REQUIRED)
+  if(KWWidgets_FOUND)
+    include(${KWWidgets_USE_FILE})
+  endif(KWWidgets_FOUND)
+endif(Slicer_USE_KWWIDGETS)
+
+find_package(Teem REQUIRED)
+if(Teem_FOUND)
+  include(${Teem_USE_FILE})
+endif(Teem_FOUND)
+
+if(Slicer_USE_BatchMake)
+ find_package(BatchMake)
+ if(BatchMake_FOUND)
+   include(${BatchMake_USE_FILE})
+ endif(BatchMake_FOUND)
+endif(Slicer_USE_BatchMake)
+
+# Add compiler flags needed to use Slicer.
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${Slicer_REQUIRED_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Slicer_REQUIRED_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${Slicer_REQUIRED_LINK_FLAGS}")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${Slicer_REQUIRED_LINK_FLAGS}")
+set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${Slicer_REQUIRED_LINK_FLAGS}")
+
+# Disable the warnings that DevStudio 2005 emits wrt to sprintf, strcpu, etc.
+if(CMAKE_COMPILER_2005)
+  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
+endif(CMAKE_COMPILER_2005)
+
+# DevStudio 9.0 - Disable warning C4996: [...] This function or variable may be unsafe. [...]
+# To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details
+if(MSVC90)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif(MSVC90)
+
+if(NOT DEFINED BUILD_SHARED_LIBS)
+  set(BUILD_SHARED_LIBS ${Slicer_BUILD_SHARED})
+endif(NOT DEFINED BUILD_SHARED_LIBS)
+
+# Add include directories needed to use Slicer.
+include_directories(BEFORE 
+  ${Slicer_Libs_INCLUDE_DIRS} 
+  ${Slicer_Base_INCLUDE_DIRS}
+  )
+
+# Add link directories needed to use Slicer.
+link_directories(
+  ${Slicer_Libs_LIBRARY_DIRS}
+  ${Slicer_Base_LIBRARY_DIRS}
+  )
+
+# Some people use Mesa instead of the default system OpenGL.
+# Try to help them a little.
+if(NOT WIN32)
+  foreach(dependency ${vtkftgl_LIB_DEPENDS})
+    get_filename_component(dependency_lib "${dependency}" NAME_WE)
+    if(dependency_lib STREQUAL "libGL")
+      get_filename_component(OPENGL_gl_LIBRARY_PATH "${dependency}" PATH)
+      link_directories("${OPENGL_gl_LIBRARY_PATH}")
+    endif(dependency_lib STREQUAL "libGL")
+  endforeach(dependency)
+endif(NOT WIN32)
+
+# Add cmake module path.
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Slicer_CMAKE_DIR}")
+include("${Slicer_CMAKE_DIR}/Slicer3Macros.cmake")
+include("${Slicer_CMAKE_DIR}/Slicer3PersistenceMacros.cmake")
+include("${Slicer_CMAKE_DIR}/Slicer3ModulesMacros.cmake")
+include("${Slicer_CMAKE_DIR}/Slicer3PluginsMacros.cmake")
