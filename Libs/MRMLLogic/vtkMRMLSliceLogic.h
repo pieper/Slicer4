@@ -42,6 +42,7 @@
 
 // VTK includes
 #include <vtkImageBlend.h>
+#include <vtkImageResample.h>
 #include <vtkCollection.h>
 #include <vtkPolyDataCollection.h>
 
@@ -134,6 +135,10 @@ public:
   /// The compositing filter
   /// TODO: this will eventually be generalized to a per-layer compositing function
   vtkGetObjectMacro(Blend, vtkImageBlend);
+
+  /// 
+  /// The resample to screen space
+  vtkGetObjectMacro(Resample, vtkImageResample);
 
   /// 
   /// All the PolyData objects to render
@@ -338,6 +343,7 @@ protected:
   double LabelOpacity;
 
   vtkImageBlend *   Blend;
+  vtkImageResample *   Resample;
   vtkImageData *    ImageData;
   vtkImageReslice * ExtractModelTexture;
 

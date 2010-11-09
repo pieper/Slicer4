@@ -125,6 +125,16 @@ class VTK_MRML_EXPORT vtkMRMLSliceNode : public vtkMRMLNode
   void SetDimensions (int x, int y, int z);
 
   /// 
+  /// Number of samples in each direction for the reslice operation
+  /// -- this is the resolution that each slice layer is resliced into
+  /// -- the outputs of the slice layers are then composited and upsampled 
+  ///    to the full Dimensions
+  /// -- note that z, the number of slices, should be the same for both 
+  ///    Dimensions and ResliceDimensions
+  vtkGetVectorMacro(ResliceDimensions,int,3)
+  void SetResliceDimensions (int x, int y, int z);
+
+  /// 
   /// Matrix mapping from XY pixel coordinates on an image window 
   /// into slice coordinates in mm
   vtkGetObjectMacro (XYToSlice, vtkMatrix4x4);
@@ -263,6 +273,7 @@ protected:
   int UseLabelOutline;
   double FieldOfView[3];
   int Dimensions[3];
+  int ResliceDimensions[3];
   char *OrientationString;
   char *OrientationReference;
 

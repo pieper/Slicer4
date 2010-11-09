@@ -367,7 +367,7 @@ void vtkMRMLSliceLayerLogic::UpdateTransforms()
   if (this->SliceNode)
     {
     vtkMatrix4x4::Multiply4x4(this->SliceNode->GetXYToRAS(), xyToIJK, xyToIJK);
-    this->SliceNode->GetDimensions(dimensions);
+    this->SliceNode->GetResliceDimensions(dimensions);
     }
 
   if (this->VolumeNode && this->VolumeNode->GetImageData())
