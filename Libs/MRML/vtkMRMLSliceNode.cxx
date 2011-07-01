@@ -83,6 +83,9 @@ vtkMRMLSliceNode::vtkMRMLSliceNode()
   this->Dimensions[0] = 256;
   this->Dimensions[1] = 256;
   this->Dimensions[2] = 1;
+  this->ResliceDimensions[0] = 256;
+  this->ResliceDimensions[1] = 256;
+  this->ResliceDimensions[2] = 1;
   this->SliceVisible = 0;
   this->WidgetVisible = 0;
   this->UseLabelOutline = 0;
@@ -347,7 +350,7 @@ void vtkMRMLSliceNode::SetSliceToRASByNTP (double Nx, double Ny, double Nz,
 
 //----------------------------------------------------------------------------
 //  Calculate XYToSlice and XYToRAS 
-//  Inputs: Dimenionss, FieldOfView, SliceToRAS
+//  Inputs: Dimensions, FieldOfView, SliceToRAS
 //
 void vtkMRMLSliceNode::UpdateMatrices()
 {
@@ -360,21 +363,16 @@ void vtkMRMLSliceNode::UpdateMatrices()
 
     // the mapping from XY output slice pixels to Slice Plane coordinate
     xyToSlice->Identity();
-    if (this->Dimensions[0] > 0 &&
-        this->Dimensions[1] > 0 &&
-        this->Dimensions[2] > 0)
+    for (i = 0; i < 3; i++)
       {
-      for (i = 0; i < 3; i++)
-        {
-        spacing[i] = this->FieldOfView[i] / this->Dimensions[i];
-        xyToSlice->SetElement(i, i, spacing[i]);
-        xyToSlice->SetElement(i, 3, -this->FieldOfView[i] / 2.);
-        }
-      //vtkWarningMacro( << "FieldOfView[2] = " << this->FieldOfView[2] << ", Dimensions[2] = " << this->Dimensions[2] );
-      //xyToSlice->SetElement(2, 2, 1.);
-
-      xyToSlice->SetElement(2, 3, 0.);
+      spacing[i] = this->FieldOfView[i] / this->Dimensions[i];
+      xyToSlice->SetElement(i, i, spacing[i]);
+      xyToSlice->SetElement(i, 3, -this->FieldOfView[i] / 2.);
       }
+    //vtkWarningMacro( << "FieldOfView[2] = " << this->FieldOfView[2] << ", Dimensions[2] = " << this->Dimensions[2] );
+    //xyToSlice->SetElement(2, 2, 1.);
+
+    xyToSlice->SetElement(2, 3, 0.);
 
     // the mapping from slice plane coordinates to RAS 
     // (the Orienation as in Axial, Sagittal, Coronal)
@@ -472,6 +470,11 @@ void vtkMRMLSliceNode::WriteXML(ostream& of, int nIndent)
         this->Dimensions[0] << " " <<
         this->Dimensions[1] << " " <<
         this->Dimensions[2] << "\"";
+
+  of << indent << " resliceDimensions=\"" << 
+        this->ResliceDimensions[0] << " " <<
+        this->ResliceDimensions[1] << " " <<
+        this->ResliceDimensions[2] << "\"";
 
   of << indent << " activeSlice=\"" << this->ActiveSlice << "\"";
   
@@ -647,6 +650,18 @@ void vtkMRMLSliceNode::ReadXMLAttributes(const char** atts)
         this->Dimensions[i] = val;
         }
       }
+   else if (!strcmp(attName, "resliceDimensions")) 
+      {
+      std::stringstream ss;
+      unsigned int val;
+      ss << attValue;
+      int i;
+      for (i=0; i<3; i++) 
+        {
+        ss >> val;
+        this->ResliceDimensions[i] = val;
+        }
+      }
     else if (!strcmp(attName, "sliceToRAS")) 
       {
       std::stringstream ss;
@@ -720,6 +735,7 @@ void vtkMRMLSliceNode::Copy(vtkMRMLNode *anode)
     {
     this->FieldOfView[i] = node->FieldOfView[i];
     this->Dimensions[i] = node->Dimensions[i];
+    this->ResliceDimensions[i] = node->ResliceDimensions[i];
     this->PrescribedSliceSpacing[i] = node->PrescribedSliceSpacing[i];
     }
   this->UpdateMatrices();
@@ -756,6 +772,12 @@ void vtkMRMLSliceNode::PrintSelf(ostream& os, vtkIndent indent)
   os << "Dimensions:\n ";
   for (idx = 0; idx < 3; ++idx) {
     os << indent << " " << this->Dimensions[idx];
+  }
+  os << "\n";
+
+  os << "ResliceDimensions:\n ";
+  for (idx = 0; idx < 3; ++idx) {
+    os << indent << " " << this->ResliceDimensions[idx];
   }
   os << "\n";
 
@@ -921,6 +943,19 @@ void vtkMRMLSliceNode::SetDimensions(int x, int y,
     this->Dimensions[0] = x;
     this->Dimensions[1] = y;
     this->Dimensions[2] = z;
+    this->UpdateMatrices();
+    }
+}
+
+void vtkMRMLSliceNode::SetResliceDimensions(int x, int y,
+                                     int z)
+{
+  if ( x != this->ResliceDimensions[0] || y != this->ResliceDimensions[1]
+       || z != this->ResliceDimensions[2] )
+    {
+    this->ResliceDimensions[0] = x;
+    this->ResliceDimensions[1] = y;
+    this->ResliceDimensions[2] = z;
     this->UpdateMatrices();
     }
 }

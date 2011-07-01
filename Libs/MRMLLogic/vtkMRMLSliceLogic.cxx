@@ -34,6 +34,7 @@
 #include <vtkImageBlend.h>
 #include <vtkImageMathematics.h>
 #include <vtkImageReslice.h>
+#include <vtkImageResample.h>
 #include <vtkMath.h>
 #include <vtkObjectFactory.h>
 #include <vtkPlaneSource.h>
@@ -78,6 +79,8 @@ vtkMRMLSliceLogic::vtkMRMLSliceLogic()
   this->ForegroundOpacity = 0.5; // Start by blending fg/bg
   this->LabelOpacity = 1.0;
   this->Blend = vtkImageBlend::New();
+  this->Resample = vtkImageResample::New();
+  this->Resample->SetInput(this->Blend->GetOutput());
   this->ExtractModelTexture = vtkImageReslice::New();
   this->ExtractModelTexture->SetOutputDimensionality (2);
   this->ActiveSliceTransform = vtkTransform::New();
@@ -111,6 +114,11 @@ vtkMRMLSliceLogic::~vtkMRMLSliceLogic()
     this->Blend->Delete();
     this->Blend = 0;
     }
+  if (this->Resample)
+    {
+    this->Resample->Delete();
+    this->Resample = 0;
+    }
   if (this->ExtractModelTexture)
     {
     this->ExtractModelTexture->Delete();
@@ -132,6 +140,8 @@ vtkMRMLSliceLogic::~vtkMRMLSliceLogic()
     {
     vtkSetAndObserveMRMLNodeMacro( this->SliceCompositeNode, 0);
     }
+
+  this->SetName(0);
 
   this->DeleteSliceModel();
 
@@ -694,16 +704,15 @@ void vtkMRMLSliceLogic::UpdateImageData ()
     {
     if ( this->Blend->GetInput(0) != 0 )
       {
-      this->Blend->Update();
+      this->Resample->Update();
       }
-    //this->ImageData = this->Blend->GetOutput();
-    if (this->ImageData== 0 || this->Blend->GetOutput()->GetMTime() > this->ImageData->GetMTime())
+    if (this->ImageData== 0 || this->Resample->GetOutput()->GetMTime() > this->ImageData->GetMTime())
       {
       if (this->ImageData== 0)
         {
         this->ImageData = vtkImageData::New();
         }
-      this->ImageData->DeepCopy( this->Blend->GetOutput());
+      this->ImageData->DeepCopy( this->Resample->GetOutput());
       this->ExtractModelTexture->SetInput( this->ImageData );
       this->ActiveSliceTransform->Identity();
       this->ActiveSliceTransform->Translate(0, 0, this->SliceNode->GetActiveSlice() );
@@ -726,6 +735,15 @@ void vtkMRMLSliceLogic::UpdatePipeline()
 {
   int modified = 0;
 
+  if ( this->SliceNode )
+    {
+    int *dimensions = this->SliceNode->GetDimensions();
+    int *resliceDimensions = this->SliceNode->GetResliceDimensions();
+    this->Resample->SetDimensionality(2);
+    this->Resample->SetAxisMagnificationFactor(0, dimensions[0]/(1.0 * resliceDimensions[0]));
+    this->Resample->SetAxisMagnificationFactor(1, dimensions[1]/(1.0 * resliceDimensions[1]));
+    this->Resample->SetInterpolationModeToLinear();
+    }
   if ( this->SliceCompositeNode )
     {
     // get the background and foreground image data from the layers

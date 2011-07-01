@@ -48,6 +48,7 @@ class vtkImageBlend;
 class vtkTransform;
 class vtkImageData;
 class vtkImageReslice;
+class vtkImageResample;
 class vtkPolyDataCollection;
 
 class VTK_MRML_LOGIC_EXPORT vtkMRMLSliceLogic : public vtkMRMLAbstractLogic 
@@ -131,6 +132,10 @@ public:
   /// 
   /// The offset to the correct slice for lightbox mode
   vtkGetObjectMacro(ActiveSliceTransform, vtkTransform);
+  /// 
+
+  /// The resample to screen space
+  vtkGetObjectMacro(Resample, vtkImageResample);
 
   /// 
   /// All the PolyData objects to render
@@ -339,10 +344,11 @@ protected:
   double ForegroundOpacity;
   double LabelOpacity;
 
-  vtkImageBlend *   Blend;
-  vtkImageData *    ImageData;
-  vtkTransform *    ActiveSliceTransform;
-  vtkImageReslice * ExtractModelTexture;
+  vtkImageBlend *      Blend;
+  vtkImageData *       ImageData;
+  vtkTransform *       ActiveSliceTransform;
+  vtkImageResample *   Resample;
+  vtkImageReslice *    ExtractModelTexture;
 
   vtkPolyDataCollection * PolyDataCollection;
   vtkCollection *         LookupTableCollection;
