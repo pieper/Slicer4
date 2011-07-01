@@ -931,7 +931,7 @@ void vtkMRMLSliceLogic::UpdatePipeline()
         }
       else if (displayNode->GetTextureImageData() != this->ExtractModelTexture->GetOutput())
         {
-        // upadte texture
+        // update texture
         this->ExtractModelTexture->Update();
         displayNode->SetAndObserveTextureImageData(this->ExtractModelTexture->GetOutput());
         }
