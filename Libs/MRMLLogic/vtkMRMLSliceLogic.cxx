@@ -713,7 +713,6 @@ void vtkMRMLSliceLogic::UpdateImageData ()
         this->ImageData = vtkImageData::New();
         }
       this->ImageData->DeepCopy( this->Resample->GetOutput());
-      this->ExtractModelTexture->SetInput( this->ImageData );
       this->ActiveSliceTransform->Identity();
       this->ActiveSliceTransform->Translate(0, 0, this->SliceNode->GetActiveSlice() );
       this->ExtractModelTexture->SetResliceTransform( this->ActiveSliceTransform );
@@ -726,8 +725,13 @@ void vtkMRMLSliceLogic::UpdateImageData ()
       this->ImageData->Delete();
       }
     this->ImageData=0;
-    this->ExtractModelTexture->SetInput( this->ImageData );
     }
+  // make the slice model texture use the version of the imageData that is
+  // at the resolution of the SliceNode's ResliceDimension.  The 
+  // slice viewer will use the output of this->Resample, which will
+  // match the screen size and be either larger or smaller than the 
+  // ResliceDimension
+  this->ExtractModelTexture->SetInput( this->Blend->GetOutput() );
 }
 
 //----------------------------------------------------------------------------
